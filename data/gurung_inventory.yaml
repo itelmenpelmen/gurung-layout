@@ -1,0 +1,109 @@
+# Gurung Scientific IME inventory
+#
+# Source: gurung-devanagri-sample-words-and-grapheme-inventory.md
+# Encoding: UTF-8
+#
+# This file is intentionally human-reviewed rather than generated blindly. The
+# Markdown source contains several alternative spellings and uncertain examples;
+# those are kept as lower-priority lexical candidates in the C++ engine instead
+# of being treated as hard errors.
+
+metadata:
+  name: Gurung Scientific IME
+  locale_hint: ne-NP
+  source: gurung-devanagri-sample-words-and-grapheme-inventory.md
+  default_script: devanagari
+
+dead_keys:
+  nasal:
+    hotkey: Ctrl+Shift+N
+    devanagari_mark: "ँ"
+    latin_mark: "combining tilde"
+  underdot:
+    hotkey: Ctrl+Shift+D
+    devanagari_role: "scientific Latin input disambiguator"
+    latin_mark: "combining dot below"
+
+consonants:
+  - { latin: "k", aliases: ["k"], devanagari: "क" }
+  - { latin: "kh", aliases: ["kh", "K"], devanagari: "ख", aspirated_from: "k" }
+  - { latin: "g", aliases: ["g"], devanagari: "ग" }
+  - { latin: "gh", aliases: ["gh", "G"], devanagari: "घ", aspirated_from: "g" }
+  - { latin: "ng", aliases: ["ng", "<"], devanagari: "ङ" }
+  - { latin: "ts", aliases: ["ts", "c"], devanagari: "च" }
+  - { latin: "tsh", aliases: ["tsh", "ch", "C"], devanagari: "छ", aspirated_from: "ts" }
+  - { latin: "dz", aliases: ["dz", "j"], devanagari: "ज" }
+  - { latin: "dzh", aliases: ["dzh", "jh", "J"], devanagari: "झ", aspirated_from: "dz" }
+  - { latin: "ṭ", aliases: ["t.", "q"], devanagari: "ट" }
+  - { latin: "ṭh", aliases: ["t.h", "qh", "Q"], devanagari: "ठ", aspirated_from: "ṭ" }
+  - { latin: "ḍ", aliases: ["d.", "x"], devanagari: "ड" }
+  - { latin: "ḍh", aliases: ["d.h", "xh", "X"], devanagari: "ढ", aspirated_from: "ḍ" }
+  - { latin: "t", aliases: ["t"], devanagari: "त" }
+  - { latin: "th", aliases: ["th", "T"], devanagari: "थ", aspirated_from: "t" }
+  - { latin: "d", aliases: ["d"], devanagari: "द" }
+  - { latin: "dh", aliases: ["dh", "D"], devanagari: "ध", aspirated_from: "d" }
+  - { latin: "n", aliases: ["n"], devanagari: "न" }
+  - { latin: "p", aliases: ["p"], devanagari: "प" }
+  - { latin: "ph", aliases: ["ph", "P", "f"], devanagari: "फ", aspirated_from: "p" }
+  - { latin: "b", aliases: ["b"], devanagari: "ब" }
+  - { latin: "bh", aliases: ["bh", "B"], devanagari: "भ", aspirated_from: "b" }
+  - { latin: "m", aliases: ["m"], devanagari: "म" }
+  - { latin: "y", aliases: ["y"], devanagari: "य" }
+  - { latin: "r", aliases: ["r"], devanagari: "र" }
+  - { latin: "l", aliases: ["l"], devanagari: "ल" }
+  - { latin: "w", aliases: ["w", "v"], devanagari: "व" }
+  - { latin: "s", aliases: ["s"], devanagari: "स" }
+  - { latin: "h", aliases: ["h"], devanagari: "ह" }
+
+vowels:
+  - { latin: "ạ", aliases: ["H", "a."], independent: "अ", matra: "" }
+  - { latin: "a", aliases: ["a", "A"], independent: "आ", matra: "ा" }
+  - { latin: "i", aliases: ["i"], independent: "इ", matra: "ि" }
+  - { latin: "ii", aliases: ["ii", "I"], independent: "ई", matra: "ी", gurung_primary: false }
+  - { latin: "u", aliases: ["u"], independent: "उ", matra: "ु" }
+  - { latin: "uu", aliases: ["uu", "U"], independent: "ऊ", matra: "ू", gurung_primary: false }
+  - { latin: "e", aliases: ["e"], independent: "ए", matra: "े" }
+  - { latin: "ai", aliases: ["ai", "E"], independent: "ऐ", matra: "ै" }
+  - { latin: "o", aliases: ["o", "O"], independent: "ओ", matra: "ो" }
+  - { latin: "ao", aliases: ["ao", "au", "W"], independent: "औ", matra: "ौ" }
+
+cluster_seconds: ["l", "r", "y", "w", "h", "dz"]
+
+lexicon:
+  - { latin: "kri", devanagari: "क्रि", gloss: "one", priority: 100 }
+  - { latin: "ngyaulo", devanagari: "ङ्याउंलो", gloss: "two", priority: 90 }
+  - { latin: "ngyaulo", devanagari: "ङ्यउंलो", gloss: "two; ạ variant", priority: 80 }
+  - { latin: "saulo", devanagari: "सउंलो", gloss: "three", priority: 90 }
+  - { latin: "tamu", devanagari: "तमु", gloss: "Tamu/Gurung", priority: 100 }
+  - { latin: "phodzo", devanagari: "फोजो", gloss: "Bhujung", priority: 100 }
+  - { latin: "tsa", devanagari: "च", gloss: "that", priority: 100 }
+  - { latin: "tsah", devanagari: "च्ह", gloss: "son", priority: 100 }
+  - { latin: "tshah", devanagari: "छ्ह", gloss: "son", priority: 95 }
+  - { latin: "mi", devanagari: "मि", gloss: "eye", priority: 90 }
+  - { latin: "mih", devanagari: "म्हि", gloss: "person", priority: 100 }
+  - { latin: "khaba", devanagari: "खाब", gloss: "fill", priority: 100 }
+  - { latin: "khaba", devanagari: "खाँब", gloss: "can", priority: 90 }
+  - { latin: "paba", devanagari: "पांब", gloss: "distribute", priority: 95 }
+  - { latin: "pahba", devanagari: "प्हांब", gloss: "wet", priority: 95 }
+  - { latin: "kli", devanagari: "क्लि", gloss: "stool", priority: 100 }
+  - { latin: "kli", devanagari: "क्लिं", gloss: "snow", priority: 85 }
+  - { latin: "liba", devanagari: "लिंब", gloss: "delicious", priority: 95 }
+  - { latin: "lihba", devanagari: "ल्हिब", gloss: "heavy", priority: 95 }
+  - { latin: "koba", devanagari: "कोब", gloss: "feed", priority: 100 }
+  - { latin: "khoba", devanagari: "खोब", gloss: "feed/like", priority: 95 }
+  - { latin: "kohba", devanagari: "क्होब", gloss: "understand", priority: 100 }
+  - { latin: "tshyaba", devanagari: "छ्याँब", gloss: "beautiful", priority: 95 }
+  - { latin: "kwãe", devanagari: "क्वेएँ", gloss: "cloths", priority: 90 }
+  - { latin: "kih", devanagari: "क्हि", gloss: "you", priority: 95 }
+  - { latin: "kyho", devanagari: "क्य्होँ", gloss: "you", priority: 90 }
+  - { latin: "sya", devanagari: "स्या", gloss: "meat", priority: 100 }
+  - { latin: "syo", devanagari: "स्यो", gloss: "river", priority: 95 }
+  - { latin: "nwara", devanagari: "न्वार", gloss: "cat", priority: 95 }
+  - { latin: "nayu", devanagari: "नयु", gloss: "dog", priority: 95 }
+  - { latin: "neme", devanagari: "नेमे", gloss: "bird", priority: 95 }
+  - { latin: "mleba", devanagari: "म्लेब", gloss: "sample", priority: 90 }
+  - { latin: "mlogu", devanagari: "म्लोँगु", gloss: "sample", priority: 90 }
+  - { latin: "mlogya", devanagari: "म्लोग्या", gloss: "black", priority: 95 }
+  - { latin: "mlogyã", devanagari: "म्लोग्याँ", gloss: "black", priority: 90 }
+  - { latin: "mrũ", devanagari: "म्रुँ", gloss: "king", priority: 95 }
+  - { latin: "mrũsyo", devanagari: "म्रुँस्याे", gloss: "queen", priority: 90 }
