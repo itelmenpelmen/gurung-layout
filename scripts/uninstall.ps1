@@ -6,12 +6,11 @@ param(
 $ErrorActionPreference = "Stop"
 
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -Platform $Platform" -Verb RunAs
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -Platform $Platform" -Verb RunAs -Wait
     exit
 }
 
 $installDir = Join-Path $env:ProgramFiles "Berkeley Computer\GurungScientificIME"
-$dll = Join-Path $installDir "GurungScientificIME_$Platform.dll"
 $regsvr32 = if ($Platform -eq "x86") {
     Join-Path $env:windir "SysWOW64\regsvr32.exe"
 } else {
@@ -42,8 +41,10 @@ function Invoke-NativeCommand {
 Stop-Process -Name "GurungHelper_x64", "GurungHelper_x86" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "ctfmon" -Force -ErrorAction SilentlyContinue
 
-if (Test-Path $dll) {
-    Invoke-NativeCommand $regsvr32 @("/u", "/s", $dll)
+if (Test-Path $installDir) {
+    Get-ChildItem -Path $installDir -Filter "GurungScientificIME_$Platform*.dll" -ErrorAction SilentlyContinue | ForEach-Object {
+        Invoke-NativeCommand $regsvr32 @("/u", "/s", $_.FullName)
+    }
 }
 
 Start-Sleep -Seconds 1
