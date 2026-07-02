@@ -148,12 +148,28 @@ HRESULT UnregisterComServer() {
 }
 
 HRESULT RegisterTextServiceProfile() {
+    ITfInputProcessorProfileMgr* profile_mgr = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
+                                  IID_ITfInputProcessorProfileMgr, reinterpret_cast<void**>(&profile_mgr));
+    if (SUCCEEDED(hr) && profile_mgr != nullptr) {
+        profile_mgr->UnregisterProfile(CLSID_GurungTextService, 0, GUID_GurungProfile, TF_URP_ALLPROFILES);
+    }
+
     ITfCategoryMgr* category_mgr = nullptr;
-    HRESULT hr = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
-                                  IID_ITfCategoryMgr, reinterpret_cast<void**>(&category_mgr));
+    hr = CoCreateInstance(CLSID_TF_CategoryMgr, nullptr, CLSCTX_INPROC_SERVER,
+                          IID_ITfCategoryMgr, reinterpret_cast<void**>(&category_mgr));
     if (SUCCEEDED(hr) && category_mgr != nullptr) {
         category_mgr->RegisterCategory(CLSID_GurungTextService, GUID_TFCAT_TIP_KEYBOARD, CLSID_GurungTextService);
         category_mgr->Release();
+    }
+
+    if (profile_mgr != nullptr) {
+        hr = profile_mgr->RegisterProfile(CLSID_GurungTextService, kGurungLangId, GUID_GurungProfile,
+                                          kTextServiceDescription,
+                                          static_cast<ULONG>(wcslen(kTextServiceDescription)),
+                                          nullptr, 0, 0, nullptr, 0, TRUE, 0);
+        profile_mgr->Release();
+        return hr;
     }
 
     ITfInputProcessorProfiles* profiles = nullptr;
@@ -184,6 +200,14 @@ HRESULT UnregisterTextServiceProfile() {
     if (SUCCEEDED(hr) && category_mgr != nullptr) {
         category_mgr->UnregisterCategory(CLSID_GurungTextService, GUID_TFCAT_TIP_KEYBOARD, CLSID_GurungTextService);
         category_mgr->Release();
+    }
+
+    ITfInputProcessorProfileMgr* profile_mgr = nullptr;
+    hr = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
+                          IID_ITfInputProcessorProfileMgr, reinterpret_cast<void**>(&profile_mgr));
+    if (SUCCEEDED(hr) && profile_mgr != nullptr) {
+        profile_mgr->UnregisterProfile(CLSID_GurungTextService, 0, GUID_GurungProfile, TF_URP_ALLPROFILES);
+        profile_mgr->Release();
     }
 
     ITfInputProcessorProfiles* profiles = nullptr;

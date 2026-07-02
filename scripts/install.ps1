@@ -1,14 +1,10 @@
 param(
     [ValidateSet("x64", "x86")]
-    [string]$Platform = "x64"
+    [string]$Platform = "x64",
+    [switch]$SkipUserProfileUpdate
 )
 
 $ErrorActionPreference = "Stop"
-
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -Platform $Platform" -Verb RunAs -Wait
-    exit
-}
 
 $root = Split-Path -Parent $PSScriptRoot
 $buildDir = Join-Path $root "build\$Platform"
@@ -17,8 +13,9 @@ $dll = Join-Path $buildDir "GurungScientificIME_$Platform.dll"
 $helper = Join-Path $buildDir "GurungHelper_$Platform.exe"
 $inventory = Join-Path $root "data\gurung_inventory.yaml"
 $typingGuide = Join-Path $root "docs\typing-guide.md"
-$gurungLanguageTag = "gvr-Deva-NP"
-$gurungInputMethodTip = "1000:{FAEC539D-4867-4342-8E56-9953A9EF1701}{8E110837-E540-44AF-A8B4-48ED7D808B65}"
+$gurungLanguageTag = "und-Latn"
+$retiredGurungLanguageTag = "gvr-Deva-NP"
+$gurungInputMethodTip = "2400:{FAEC539D-4867-4342-8E56-9953A9EF1701}{8E110837-E540-44AF-A8B4-48ED7D808B65}"
 $gurungTipPattern = '^[0-9A-Fa-f]{4}:\{FAEC539D-4867-4342-8E56-9953A9EF1701\}\{8E110837-E540-44AF-A8B4-48ED7D808B65\}$'
 
 if (-not (Test-Path $dll)) {
@@ -63,7 +60,8 @@ function Set-GurungUserLanguageProfile {
         $languageList = Get-WinUserLanguageList
         $targetLanguage = $null
 
-        foreach ($language in $languageList) {
+        for ($index = $languageList.Count - 1; $index -ge 0; --$index) {
+            $language = $languageList[$index]
             if ($language.LanguageTag -eq $gurungLanguageTag) {
                 $targetLanguage = $language
             }
@@ -79,6 +77,10 @@ function Set-GurungUserLanguageProfile {
             foreach ($tip in $keptTips) {
                 [void]$language.InputMethodTips.Add($tip)
             }
+
+            if ($language.LanguageTag -eq $retiredGurungLanguageTag -and $language.InputMethodTips.Count -eq 0) {
+                $languageList.RemoveAt($index)
+            }
         }
 
         if ($null -eq $targetLanguage) {
@@ -93,11 +95,19 @@ function Set-GurungUserLanguageProfile {
         }
 
         Set-WinUserLanguageList $languageList -Force
-        Write-Host "Windows language profile added: Western Gurung (gvr-Deva-NP)." -ForegroundColor Green
+        Write-Host "Windows language profile added: und-Latn with Gurung Scientific IME." -ForegroundColor Green
     } catch {
         Write-Warning "Installed the IME, but could not update the Windows language list automatically: $($_.Exception.Message)"
-        Write-Warning "If needed, add Western Gurung (gvr-Deva-NP) in Settings and choose Gurung Scientific IME."
+        Write-Warning "If needed, add Undetermined (und-Latn) in Settings and choose Gurung Scientific IME."
     }
+}
+
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" -Platform $Platform -SkipUserProfileUpdate" -Verb RunAs -Wait
+    if (-not $SkipUserProfileUpdate) {
+        Set-GurungUserLanguageProfile
+    }
+    exit
 }
 
 if (-not (Test-Path $dll)) {
@@ -130,7 +140,9 @@ if (Test-Path $typingGuide) {
 }
 
 Invoke-NativeCommand $regsvr32 @("/s", $installedDll)
-Set-GurungUserLanguageProfile
+if (-not $SkipUserProfileUpdate) {
+    Set-GurungUserLanguageProfile
+}
 
 Start-Process "ctfmon.exe"
 
@@ -138,6 +150,6 @@ if (Test-Path (Join-Path $installDir (Split-Path -Leaf $helper))) {
     Start-Process -FilePath (Join-Path $installDir (Split-Path -Leaf $helper)) -WindowStyle Hidden
 }
 
-Write-Host "Gurung Scientific IME installed under Western Gurung (gvr-Deva-NP)." -ForegroundColor Green
+Write-Host "Gurung Scientific IME installed under und-Latn." -ForegroundColor Green
 Write-Host "Registered DLL: $installedDll" -ForegroundColor Green
 Write-Host "SHA256: $installedHash" -ForegroundColor Green

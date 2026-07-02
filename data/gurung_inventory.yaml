@@ -11,6 +11,7 @@
 metadata:
   name: Gurung Scientific IME
   locale_hint: gvr-Deva-NP
+  windows_host_locale: und-Latn
   source: gurung-devanagri-sample-words-and-grapheme-inventory.md
   default_script: devanagari
 
