@@ -17,6 +17,9 @@ $dll = Join-Path $buildDir "GurungScientificIME_$Platform.dll"
 $helper = Join-Path $buildDir "GurungHelper_$Platform.exe"
 $inventory = Join-Path $root "data\gurung_inventory.yaml"
 $typingGuide = Join-Path $root "docs\typing-guide.md"
+$gurungLanguageTag = "gvr-Deva-NP"
+$gurungInputMethodTip = "1000:{FAEC539D-4867-4342-8E56-9953A9EF1701}{8E110837-E540-44AF-A8B4-48ED7D808B65}"
+$gurungTipPattern = '^[0-9A-Fa-f]{4}:\{FAEC539D-4867-4342-8E56-9953A9EF1701\}\{8E110837-E540-44AF-A8B4-48ED7D808B65\}$'
 
 if (-not (Test-Path $dll)) {
     $packageDll = Join-Path $PSScriptRoot "GurungScientificIME_$Platform.dll"
@@ -55,6 +58,48 @@ function Invoke-NativeCommand {
     }
 }
 
+function Set-GurungUserLanguageProfile {
+    try {
+        $languageList = Get-WinUserLanguageList
+        $targetLanguage = $null
+
+        foreach ($language in $languageList) {
+            if ($language.LanguageTag -eq $gurungLanguageTag) {
+                $targetLanguage = $language
+            }
+
+            $keptTips = New-Object System.Collections.Generic.List[string]
+            foreach ($tip in $language.InputMethodTips) {
+                if (-not [string]::IsNullOrWhiteSpace($tip) -and $tip -notmatch $gurungTipPattern) {
+                    [void]$keptTips.Add($tip)
+                }
+            }
+
+            $language.InputMethodTips.Clear()
+            foreach ($tip in $keptTips) {
+                [void]$language.InputMethodTips.Add($tip)
+            }
+        }
+
+        if ($null -eq $targetLanguage) {
+            $newLanguageList = New-WinUserLanguageList $gurungLanguageTag
+            $targetLanguage = $newLanguageList[0]
+            $targetLanguage.InputMethodTips.Clear()
+            [void]$languageList.Add($targetLanguage)
+        }
+
+        if (-not $targetLanguage.InputMethodTips.Contains($gurungInputMethodTip)) {
+            [void]$targetLanguage.InputMethodTips.Add($gurungInputMethodTip)
+        }
+
+        Set-WinUserLanguageList $languageList -Force
+        Write-Host "Windows language profile added: Western Gurung (gvr-Deva-NP)." -ForegroundColor Green
+    } catch {
+        Write-Warning "Installed the IME, but could not update the Windows language list automatically: $($_.Exception.Message)"
+        Write-Warning "If needed, add Western Gurung (gvr-Deva-NP) in Settings and choose Gurung Scientific IME."
+    }
+}
+
 if (-not (Test-Path $dll)) {
     throw "Missing GurungScientificIME_$Platform.dll. Run scripts\build.ps1 first, or run this installer from a release package folder."
 }
@@ -85,6 +130,7 @@ if (Test-Path $typingGuide) {
 }
 
 Invoke-NativeCommand $regsvr32 @("/s", $installedDll)
+Set-GurungUserLanguageProfile
 
 Start-Process "ctfmon.exe"
 
@@ -92,6 +138,6 @@ if (Test-Path (Join-Path $installDir (Split-Path -Leaf $helper))) {
     Start-Process -FilePath (Join-Path $installDir (Split-Path -Leaf $helper)) -WindowStyle Hidden
 }
 
-Write-Host "Gurung Scientific IME installed. Add it under Settings > Time & Language > Language & Region > Nepali > Keyboards." -ForegroundColor Green
+Write-Host "Gurung Scientific IME installed under Western Gurung (gvr-Deva-NP)." -ForegroundColor Green
 Write-Host "Registered DLL: $installedDll" -ForegroundColor Green
 Write-Host "SHA256: $installedHash" -ForegroundColor Green

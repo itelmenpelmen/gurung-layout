@@ -38,9 +38,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install.ps1 -P
 
 Then add the keyboard under:
 
-`Settings > Time & Language > Language & Region > Nepali > Language options > Keyboards`
+`Settings > Time & Language > Language & Region > Western Gurung (gvr-Deva-NP) > Language options > Keyboards`
 
 Choose **Gurung Scientific IME**.
+
+The installer also tries to add the `gvr-Deva-NP` Windows language profile automatically. This keeps the IME out of the generic Nepali tray entry.
 
 To uninstall:
 

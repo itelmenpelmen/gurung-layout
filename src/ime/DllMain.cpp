@@ -163,6 +163,8 @@ HRESULT RegisterTextServiceProfile() {
         return hr;
     }
 
+    profiles->Unregister(CLSID_GurungTextService);
+
     hr = profiles->Register(CLSID_GurungTextService);
     if (SUCCEEDED(hr)) {
         hr = profiles->AddLanguageProfile(CLSID_GurungTextService, kGurungLangId, GUID_GurungProfile,

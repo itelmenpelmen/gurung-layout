@@ -11,6 +11,8 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 $installDir = Join-Path $env:ProgramFiles "Berkeley Computer\GurungScientificIME"
+$gurungLanguageTag = "gvr-Deva-NP"
+$gurungTipPattern = '^[0-9A-Fa-f]{4}:\{FAEC539D-4867-4342-8E56-9953A9EF1701\}\{8E110837-E540-44AF-A8B4-48ED7D808B65\}$'
 $regsvr32 = if ($Platform -eq "x86") {
     Join-Path $env:windir "SysWOW64\regsvr32.exe"
 } else {
@@ -38,6 +40,36 @@ function Invoke-NativeCommand {
     }
 }
 
+function Remove-GurungUserLanguageProfile {
+    try {
+        $languageList = Get-WinUserLanguageList
+
+        for ($index = $languageList.Count - 1; $index -ge 0; --$index) {
+            $language = $languageList[$index]
+            $keptTips = New-Object System.Collections.Generic.List[string]
+
+            foreach ($tip in $language.InputMethodTips) {
+                if (-not [string]::IsNullOrWhiteSpace($tip) -and $tip -notmatch $gurungTipPattern) {
+                    [void]$keptTips.Add($tip)
+                }
+            }
+
+            $language.InputMethodTips.Clear()
+            foreach ($tip in $keptTips) {
+                [void]$language.InputMethodTips.Add($tip)
+            }
+
+            if ($language.LanguageTag -eq $gurungLanguageTag -and $language.InputMethodTips.Count -eq 0) {
+                $languageList.RemoveAt($index)
+            }
+        }
+
+        Set-WinUserLanguageList $languageList -Force
+    } catch {
+        Write-Warning "Could not update the Windows language list automatically: $($_.Exception.Message)"
+    }
+}
+
 Stop-Process -Name "GurungHelper_x64", "GurungHelper_x86" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "ctfmon" -Force -ErrorAction SilentlyContinue
 
@@ -46,6 +78,8 @@ if (Test-Path $installDir) {
         Invoke-NativeCommand $regsvr32 @("/u", "/s", $_.FullName)
     }
 }
+
+Remove-GurungUserLanguageProfile
 
 Start-Sleep -Seconds 1
 Remove-Item -Recurse -Force -Path $installDir -ErrorAction SilentlyContinue

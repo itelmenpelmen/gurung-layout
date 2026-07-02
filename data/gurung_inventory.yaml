@@ -10,7 +10,7 @@
 
 metadata:
   name: Gurung Scientific IME
-  locale_hint: ne-NP
+  locale_hint: gvr-Deva-NP
   source: gurung-devanagri-sample-words-and-grapheme-inventory.md
   default_script: devanagari
 
