@@ -148,6 +148,15 @@ HRESULT UnregisterComServer() {
 }
 
 HRESULT RegisterTextServiceProfile() {
+    wchar_t icon_path[MAX_PATH] = {};
+    if (GetSystemDirectoryW(icon_path, ARRAYSIZE(icon_path)) != 0) {
+        StringCchCatW(icon_path, ARRAYSIZE(icon_path), L"\\input.dll");
+    }
+    const wchar_t* profile_icon = icon_path[0] != L'\0' ? icon_path : nullptr;
+    const ULONG profile_icon_length = profile_icon != nullptr
+        ? static_cast<ULONG>(wcslen(profile_icon))
+        : 0;
+
     ITfInputProcessorProfileMgr* profile_mgr = nullptr;
     HRESULT hr = CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
                                   IID_ITfInputProcessorProfileMgr, reinterpret_cast<void**>(&profile_mgr));
@@ -167,7 +176,7 @@ HRESULT RegisterTextServiceProfile() {
         hr = profile_mgr->RegisterProfile(CLSID_GurungTextService, kGurungLangId, GUID_GurungProfile,
                                           kTextServiceDescription,
                                           static_cast<ULONG>(wcslen(kTextServiceDescription)),
-                                          nullptr, 0, 0, nullptr, 0, TRUE, 0);
+                                          profile_icon, profile_icon_length, 0, nullptr, 0, TRUE, 0);
         profile_mgr->Release();
         return hr;
     }
@@ -186,7 +195,7 @@ HRESULT RegisterTextServiceProfile() {
         hr = profiles->AddLanguageProfile(CLSID_GurungTextService, kGurungLangId, GUID_GurungProfile,
                                           kTextServiceDescription,
                                           static_cast<ULONG>(wcslen(kTextServiceDescription)),
-                                          nullptr, 0, 0);
+                                          profile_icon, profile_icon_length, 0);
     }
 
     profiles->Release();

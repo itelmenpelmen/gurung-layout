@@ -90,9 +90,8 @@ function Set-GurungUserLanguageProfile {
             [void]$languageList.Add($targetLanguage)
         }
 
-        if (-not $targetLanguage.InputMethodTips.Contains($gurungInputMethodTip)) {
-            [void]$targetLanguage.InputMethodTips.Add($gurungInputMethodTip)
-        }
+        [void]$targetLanguage.InputMethodTips.Remove($gurungInputMethodTip)
+        $targetLanguage.InputMethodTips.Insert(0, $gurungInputMethodTip)
 
         Set-WinUserLanguageList $languageList -Force
         Write-Host "Windows language profile added: und-Latn with Gurung Scientific IME." -ForegroundColor Green
